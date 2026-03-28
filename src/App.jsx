@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { LanguageProvider } from './i18n';
 import PWALayout from './pwa/layouts/PWALayout';
 import Home from './pwa/pages/Home';
 import ReportStepper from './pwa/pages/ReportStepper';
@@ -19,8 +20,9 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
+    <LanguageProvider>
+      <ErrorBoundary>
+        <BrowserRouter>
       <Toaster position="top-center" reverseOrder={false} />
       <Routes>
         {/* Auth Portals */}
@@ -53,6 +55,7 @@ function App() {
       </Routes>
     </BrowserRouter>
     </ErrorBoundary>
+    </LanguageProvider>
   );
 }
 

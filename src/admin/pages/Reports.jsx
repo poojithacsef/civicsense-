@@ -9,6 +9,7 @@ export default function Reports() {
   const [modalOpen, setModalOpen] = useState(false);
   const [updateNotes, setUpdateNotes] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
     // Real-time listener using onSnapshot
@@ -64,9 +65,15 @@ export default function Reports() {
         <div className="flex gap-3">
           <div className="relative hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-            <input type="text" placeholder="Search ID or Title..." className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-saffron focus:border-saffron focus:outline-none w-64 text-sm" />
+            <input 
+              type="text" 
+              placeholder="Search ID or Title..." 
+              className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl shadow-sm focus:ring-2 focus:ring-saffron focus:border-saffron focus:outline-none w-64 text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-          <button className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm text-slate-700 hover:bg-slate-50 transition-colors font-semibold text-sm">
+          <button onClick={() => toast('Advanced filtering coming soon', {icon: '🚧'})} className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm text-slate-700 hover:bg-slate-50 transition-colors font-semibold text-sm">
             <Filter size={16} /> Filter
           </button>
         </div>
@@ -74,7 +81,32 @@ export default function Reports() {
 
       {/* Grid: 3 cards per row responsive */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
-        {reports.map(report => (
+        {(() => {
+          const filteredReports = reports.filter(report => {
+            if (!searchQuery.trim()) return true;
+            const query = searchQuery.toLowerCase();
+            const id = report.id?.toLowerCase() || '';
+            const title = report.title?.toLowerCase() || '';
+            return id.includes(query) || title.includes(query);
+          });
+
+          if (reports.length === 0) {
+            return (
+              <div className="col-span-3 text-center py-20 text-slate-400 font-semibold">
+                 Fetching live reports from Firestore...
+              </div>
+            );
+          }
+
+          if (filteredReports.length === 0) {
+            return (
+              <div className="col-span-3 text-center py-20 text-slate-400 font-semibold bg-white rounded-2xl border border-slate-100 border-dashed">
+                 No reports matched your search.
+              </div>
+            );
+          }
+
+          return filteredReports.map(report => (
           <div key={report.id} className={`bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all border-t-[5px] flex flex-col overflow-hidden relative group animate-in fade-in duration-300
             ${report.priority === 'High' ? 'border-t-red-500' : report.priority === 'Medium' ? 'border-t-orange-500' : 'border-t-indiaGreen'}
           `}>
@@ -104,7 +136,12 @@ export default function Reports() {
                      <div className="absolute inset-0 bg-black/10 rounded-xl pointer-events-none"></div>
                    </div>
                    <div>
-                     <h3 className="font-bold text-slate-900 text-[17px] leading-tight mb-1">{report.title}</h3>
+                     <h3 className="font-bold text-slate-900 text-[17px] leading-tight mb-1 flex items-center gap-2 flex-wrap">
+                       {report.title}
+                       {report.possibleDuplicate && (
+                         <span className="bg-red-50 text-red-600 border border-red-200 text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-sm">Possible Duplicate</span>
+                       )}
+                     </h3>
                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
                        {report.description || "No description provided."}
                      </p>
@@ -137,12 +174,8 @@ export default function Reports() {
                 </div>
              </div>
           </div>
-        ))}
-        {reports.length === 0 && (
-          <div className="col-span-3 text-center py-20 text-slate-400 font-semibold">
-             Fetching live reports from Firestore...
-          </div>
-        )}
+          ));
+        })()}
       </div>
 
       {/* Update Modal */}

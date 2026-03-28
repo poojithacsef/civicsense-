@@ -1,7 +1,7 @@
 import { db, storage } from './config';
 import { 
   collection, addDoc, updateDoc, doc, onSnapshot, 
-  query, orderBy, limit, serverTimestamp, arrayUnion, increment, getDoc, setDoc 
+  query, orderBy, limit, serverTimestamp, arrayUnion, increment, getDoc, setDoc, getDocs 
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
@@ -26,6 +26,12 @@ export const subscribeToReports = (callback) => {
     });
     callback(reports);
   });
+};
+
+export const getRecentReports = async () => {
+  const q = query(collection(db, REPORTS_COLLECTION), orderBy('createdAt', 'desc'), limit(100));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const uploadMedia = async (file) => {

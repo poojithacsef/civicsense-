@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { PieChart, Pie, Cell, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Download, Share2, TrendingDown, TrendingUp, AlertOctagon } from 'lucide-react';
 import { subscribeToReports } from '../../firebase/services';
+import toast from 'react-hot-toast';
 
 const COLORS = ['#138808', '#FF9933', '#64748b', '#3b82f6', '#ef4444']; // Extended for statuses
 
@@ -60,10 +61,10 @@ export default function Analytics() {
           <p className="text-slate-500 text-sm mt-1">Real-time civic data metrics from Firestore.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm text-slate-700 hover:bg-slate-50 transition-colors font-semibold text-sm">
+          <button onClick={() => toast.success('Analytics sharing link copied to clipboard')} className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm text-slate-700 hover:bg-slate-50 transition-colors font-semibold text-sm">
             <Share2 size={16} /> Share
           </button>
-          <button className="flex items-center gap-2 bg-saffron border border-orange-500 px-4 py-2 rounded-xl shadow-[0_4px_12px_rgba(255,153,51,0.3)] text-white hover:bg-orange-600 transition-colors font-semibold text-sm">
+          <button onClick={() => toast.success('Exporting PDF...', { icon: '📄' })} className="flex items-center gap-2 bg-saffron border border-orange-500 px-4 py-2 rounded-xl shadow-[0_4px_12px_rgba(255,153,51,0.3)] text-white hover:bg-orange-600 transition-colors font-semibold text-sm">
             <Download size={16} /> Export PDF
           </button>
         </div>

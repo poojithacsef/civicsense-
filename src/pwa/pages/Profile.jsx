@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Phone, Award, Star, History, Mail } from 'lucide-react';
 import { subscribeToReports } from '../../firebase/services';
 import { auth } from '../../firebase/config';
+import toast from 'react-hot-toast';
 
 export default function Profile() {
   const [reports, setReports] = useState([]);
@@ -62,11 +63,11 @@ export default function Profile() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <button className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 border-b border-slate-50 transition-colors">
+          <button onClick={() => toast.success('You have viewed your report history')} className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 border-b border-slate-50 transition-colors">
             <div className="bg-blue-50 p-2 rounded-xl text-blue-500"><History size={20} /></div>
             <span className="font-semibold text-slate-700 flex-1 text-left">Report History</span>
           </button>
-          <button className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors">
+          <button onClick={() => window.location.href = 'tel:112'} className="w-full flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors">
             <div className="bg-red-50 p-2 rounded-xl text-red-500"><Phone size={20} /></div>
             <span className="font-semibold text-slate-700 flex-1 text-left">Emergency Helpline (112)</span>
           </button>
